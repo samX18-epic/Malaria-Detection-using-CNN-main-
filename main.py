@@ -1,8 +1,24 @@
 import streamlit as st
-import tensorflow as tf
-from PIL import Image
-import numpy as np
-import os
+
+try:
+    import tensorflow as tf
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    try:
+        import tensorflow_cpu as tf
+        TENSORFLOW_AVAILABLE = True
+    except ImportError:
+        TENSORFLOW_AVAILABLE = False
+        st.error("TensorFlow is not available. Please install it using: pip install tensorflow-cpu")
+
+try:
+    from PIL import Image
+    import numpy as np
+    import os
+except ImportError as e:
+    st.error(f"Import Error: {e}")
+    st.error("Please check if all required packages are installed.")
+    st.stop()
 
 # --- Page config ---
 st.set_page_config(
@@ -57,11 +73,20 @@ with st.container():
 # --- Load the model ---
 @st.cache_resource
 def load_model():
-    model_path = "/Users/samspc/streamlit/malaria_detection-streamlit/malaria_detection by sam (2).keras"
+    if not TENSORFLOW_AVAILABLE:
+        st.error("TensorFlow is not available. Cannot load the model.")
+        return None
+    
+    model_path = "malaria_detection by sam (2).keras"
     if not os.path.exists(model_path):
         st.error(f"Model file '{model_path}' not found.")
         return None
-    return tf.keras.models.load_model(model_path)
+    
+    try:
+        return tf.keras.models.load_model(model_path)
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
 model = load_model()
 

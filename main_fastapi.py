@@ -7,6 +7,8 @@ import io
 
 from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://your-lovable-app-domain.com"],  # or ["*"] for testing
@@ -14,8 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app = FastAPI()
 
 # Load your trained model (change the path accordingly)
 MODEL_PATH = "malaria_detection by sam (2).keras"
