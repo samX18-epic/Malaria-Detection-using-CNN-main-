@@ -1,15 +1,32 @@
 import streamlit as st
 
+# Try multiple ways to import TensorFlow
+TENSORFLOW_AVAILABLE = False
+tf = None
+
 try:
     import tensorflow as tf
     TENSORFLOW_AVAILABLE = True
+    st.success("TensorFlow imported successfully!")
 except ImportError:
     try:
         import tensorflow_cpu as tf
         TENSORFLOW_AVAILABLE = True
+        st.success("TensorFlow CPU imported successfully!")
     except ImportError:
-        TENSORFLOW_AVAILABLE = False
-        st.error("TensorFlow is not available. Please install it using: pip install tensorflow-cpu")
+        try:
+            # Try installing tensorflow-cpu if not available
+            import subprocess
+            import sys
+            st.warning("TensorFlow not found. Attempting to install...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "tensorflow-cpu==2.10.0"])
+            import tensorflow_cpu as tf
+            TENSORFLOW_AVAILABLE = True
+            st.success("TensorFlow CPU installed and imported successfully!")
+        except Exception as e:
+            TENSORFLOW_AVAILABLE = False
+            st.error(f"Failed to install TensorFlow: {e}")
+            st.error("Please install it manually using: pip install tensorflow-cpu==2.10.0")
 
 try:
     from PIL import Image
